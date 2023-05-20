@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from io import BytesIO
 from PIL import Image
 from datetime import datetime
-import os
+import lxml
 
 from email.message import EmailMessage
 import ssl
