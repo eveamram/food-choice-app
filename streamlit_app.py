@@ -41,6 +41,9 @@ if "df" not in st.session_state:
 if "eval_button" not in st.session_state:
     st.session_state["eval_button"] = False
 
+# if "all_total_emssion" not in st.session_state:
+#     st.session_state["all_total_emission"] = 0
+
 def google_search_image(query):
     url = 'https://www.google.com/search?q={0}&tbm=isch'.format(query)
     content = requests.get(url).content
@@ -125,7 +128,6 @@ def reset_df():
     st.session_state["finalize_recipe"] = False
     if st.session_state["reset"] == True:
         st.session_state.df = pd.DataFrame(columns=["Category:", "Ingredient:", "Amount:", "Unit:", "CO2 Emission (Kg):"])
-        # st.success("Your recipe has been updated.", icon="✅")
         st.success("Your recipe has been updated.", icon="✅")
         st.session_state["reset"] = False
 
@@ -157,6 +159,7 @@ if evaluate_submit:
     results_tab_col1, results_tab_col2 = st.columns([2,5])
     with results_tab_col1:
         total_emission_recipe, label = evaluate_recipe(st.session_state.df)
+        st.session_state["all_total_emission"] = total_emission_recipe
         delta_value = baseline_cutoff - total_emission_recipe
         delta_value = round(delta_value, 3)
         st.metric(label="Total CO2 Emission Generated in Manufactoring Your Recipe:",
@@ -172,12 +175,11 @@ if evaluate_submit:
             st.image(green_image, width=150)
     with results_tab_col2:
         st.subheader("Evaluation Results:")
-        # st.write("The cut-off values are retrieved from the <total food and beverage products from household data> from [Statistics Canada](https://www150.statcan.gc.ca/n1/pub/16-508-x/16-508-x2019004-eng.htm).")
         with st.expander("❕View Label Assessment Metrics"):
             st.write("Label cut-off values are retrieved from [Statistics Canada](https://www150.statcan.gc.ca/n1/pub/16-508-x/16-508-x2019004-eng.html)."
                      " Total greenhouse gas emission value from household food and beverages products & services (from 2015) is divided by the number of total households in Canada, assuming that on average there are 3 members in a household.")
             st.markdown("- :red[High Impact] : Assigned if the total CO2 emission produced from recipe > cut-off value")
-            st.markdown("- :yellow[Medium Impact] : Assigned if the total CO2 emission produced from recipe is in between hjgh and low impact")
+            st.markdown("- :orange[Medium Impact] : Assigned if the total CO2 emission produced from recipe is in between hjgh and low impact")
             st.markdown("- :green[Low Impact] : Assigned if the total CO2 emission produced from recipe < (cut-off value * 0.5)")
 
         if label == "High Impact":
@@ -267,21 +269,22 @@ if st.session_state["finalize_recipe"] == True:
     st.session_state["eval_button"] = False
     final_image_col, final_text_col = st.columns([4,7])
     changed_emission = st.session_state.df["CO2 Emission (Kg):"].sum()
-    subtracted_emission = st.session_state.total_emission - changed_emission
+    subtracted_emission = st.session_state.all_total_emission - changed_emission
     compare_to_vehicle_value = compare_to_vehicle(subtracted_emission)
     with final_image_col:
-        if changed_emission < st.session_state.total_emission:
+        if changed_emission < st.session_state.all_total_emission:
             success_image = Image.open("image/success.png")
             st.image(success_image, width=350)
-        elif changed_emission >= st.session_state.total_emission:
+        elif changed_emission >= st.session_state.all_total_emission:
+            # st.write(st.session_state.all_total_emission)
             warning_image = Image.open("image/warning.png")
             st.image(warning_image, width=200)
     with final_text_col:
-        if changed_emission < st.session_state.total_emission:
+        if changed_emission < st.session_state.all_total_emission:
             st.markdown("<h3 style='color:green'>Success!</h3>", unsafe_allow_html=True)
-            text_col0, image_col0, text_col1 = st.columns([3,1,6])
+            text_col0, image_col0, text_col1 = st.columns([3,1,5])
             with text_col0:
-                st.metric("Total CO2 Kg produced:", st.session_state.total_emission, subtracted_emission)
+                st.metric("Total CO2 Kg produced:", changed_emission, subtracted_emission)
             with image_col0:
                 truck_image = Image.open("image/truck.png")
                 st.image(truck_image, width=70)
