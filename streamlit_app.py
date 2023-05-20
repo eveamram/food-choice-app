@@ -9,9 +9,6 @@ from PIL import Image
 from datetime import datetime
 import os
 
-from st_aggrid import AgGrid, GridUpdateMode, DataReturnMode, AgGridTheme
-from st_aggrid.grid_options_builder import GridOptionsBuilder
-
 from email.message import EmailMessage
 import ssl
 import smtplib
