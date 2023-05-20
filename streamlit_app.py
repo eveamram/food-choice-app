@@ -293,12 +293,12 @@ if st.session_state["finalize_recipe"] == True:
             final_df = st.session_state.df
             st.button("\nSend Email", key="send_email", on_click=send_email)
             st.write("Make sure to press Enter before you click on Send Email button.")
-        elif changed_emission >= st.session_state.total_emission:
-            st.session_state["hold_on_df"] = True
-            st.markdown("<h3 style='color:blue'>Hold On...</h3>", unsafe_allow_html=True)
-            st.info(f"You have made changes in your recipe, but it didn't reduce total amount of CO2 produced. Try making altenative selection.", icon="ℹ️")
-            if st.session_state["hold_on_df"] == True:
-                st.session_state["finalize_recipe"] = True
+        # elif changed_emission >= st.session_state.total_emission:
+        #     st.session_state["hold_on_df"] = True
+        #     st.markdown("<h3 style='color:blue'>Hold On...</h3>", unsafe_allow_html=True)
+        #     st.info(f"You have made changes in your recipe, but it didn't reduce total amount of CO2 produced. Try making altenative selection.", icon="ℹ️")
+        #     if st.session_state["hold_on_df"] == True:
+        #         st.session_state["finalize_recipe"] = True
 
 
 if st.session_state["eval_button"] == True:
