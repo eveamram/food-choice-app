@@ -16,12 +16,17 @@ import smtplib
 from app_functions import calculate_total_emission_individual, convert_units, baseline_cutoff, evaluate_recipe, find_eligible_category, find_closest_alternative, compare_to_vehicle
 from email_sender import email_sender, email_password
 
+st.set_page_config(
+    page_title="Alternative Recipe",
+    page_icon="image/vegetable.png",
+    layout="wide"
+)
+
 df = pd.read_csv("cleaned_data/ingredients2.csv")
 nutrient_df = pd.read_csv("cleaned_data/nutrient_df.csv")
 unit_df = pd.read_csv("cleaned_data/unit_conversion.csv")
 footprints_df = pd.read_csv("cleaned_data/carbon_footprints.csv")
 
-st.set_page_config(layout="wide")
 st.markdown("<h1 style='text-align: center;'>Alternative Recipe</h1>", unsafe_allow_html=True)
 
 image_columns = st.columns(3)
@@ -306,7 +311,7 @@ if st.session_state["finalize_recipe"] == True:
 
 if st.session_state["eval_button"] == True:
     st.divider()
-    col1, col2= st.columns([4,8])
+    col1, col0, col2= st.columns([4,1,8])
     with col1:
         st.subheader("Alternative Recipe:")
         st.markdown("Alternative Recipe suggests an ingredient of :green[lower carbon emission] footprint that has the closest nutritional values with the original ingredient.")
@@ -322,6 +327,8 @@ if st.session_state["eval_button"] == True:
         except:
             swap_category = st.selectbox("Swap with Ingredient From Category:", "",
                                          key="swap_no_category")
+    with col0:
+        st.write("")
     with col2:
         selected_ingredient_swap = find_alternative(original_ingredients_select, swap_category, st.session_state.alternative_number)
         st.image(google_search_image(selected_ingredient_swap), width=200)

@@ -2,5 +2,5 @@ import ssl
 import smtplib
 from datetime import datetime
 
-email_sender = "jenny.jeeun@gmail.com"
-email_password = "bnkyszaaqmsduobq"
+email_sender = "alternative.recipe.app@gmail.com"
+email_password = "mumbouplojdgqdpx"
