@@ -23,22 +23,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# def add_bg_from_url():
-#     st.markdown(
-#          f"""
-#          <style>
-#          .stApp {{
-#              background-image: url("https://cdn.pixabay.com/photo/2020/11/01/18/58/leaves-5704661_960_720.png");
-#              background-attachment: fixed;
-#              background-size: cover
-#          }}
-#          </style>
-#          """,
-#          unsafe_allow_html=True
-#      )
-#
-# add_bg_from_url()
-
 df = pd.read_csv("cleaned_data/ingredients2.csv")
 nutrient_df = pd.read_csv("cleaned_data/nutrient_df.csv")
 unit_df = pd.read_csv("cleaned_data/unit_conversion.csv")
