@@ -1,6 +1,7 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 import pandas as pd
+import math
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,14 +14,30 @@ from email.message import EmailMessage
 import ssl
 import smtplib
 
-from app_functions import calculate_total_emission_individual, convert_units, baseline_cutoff, evaluate_recipe, find_eligible_category, find_closest_alternative, compare_to_vehicle
+from app_functions import calculate_total_emission_individual, convert_units, baseline_cutoff, evaluate_recipe, find_eligible_category, find_closest_alternative, compare_to_vehicle, calculate_num_trees
 from email_sender import email_sender, email_password
 
 st.set_page_config(
     page_title="Alternative Recipe",
-    page_icon="image/vegetable.png",
+    page_icon="🍽️",
     layout="wide"
 )
+
+# def add_bg_from_url():
+#     st.markdown(
+#          f"""
+#          <style>
+#          .stApp {{
+#              background-image: url("https://cdn.pixabay.com/photo/2020/11/01/18/58/leaves-5704661_960_720.png");
+#              background-attachment: fixed;
+#              background-size: cover
+#          }}
+#          </style>
+#          """,
+#          unsafe_allow_html=True
+#      )
+#
+# add_bg_from_url()
 
 df = pd.read_csv("cleaned_data/ingredients2.csv")
 nutrient_df = pd.read_csv("cleaned_data/nutrient_df.csv")
@@ -133,7 +150,7 @@ def reset_df():
     st.session_state["finalize_recipe"] = False
     if st.session_state["reset"] == True:
         st.session_state.df = pd.DataFrame(columns=["Category:", "Ingredient:", "Amount:", "Unit:", "CO2 Emission (Kg):"])
-        st.success("Your recipe has been updated.", icon="✅")
+        st.success("Your recipe has been resetted.", icon="✅")
         st.session_state["reset"] = False
 
 def turn_reset_on():
@@ -276,6 +293,7 @@ if st.session_state["finalize_recipe"] == True:
     changed_emission = st.session_state.df["CO2 Emission (Kg):"].sum()
     subtracted_emission = st.session_state.all_total_emission - changed_emission
     compare_to_vehicle_value = compare_to_vehicle(subtracted_emission)
+    compare_to_tree = calculate_num_trees(subtracted_emission)
     with final_image_col:
         if changed_emission < st.session_state.all_total_emission:
             success_image = Image.open("image/success.png")
@@ -286,16 +304,20 @@ if st.session_state["finalize_recipe"] == True:
             st.image(warning_image, width=200)
     with final_text_col:
         if changed_emission < st.session_state.all_total_emission:
-            st.markdown("<h3 style='color:green'>Success!</h3>", unsafe_allow_html=True)
+            st.markdown("<h2 style='color:green'>Success!</h2>", unsafe_allow_html=True)
             text_col0, image_col0, text_col1 = st.columns([3,1,5])
             with text_col0:
                 st.metric("Total CO2 Kg produced:", changed_emission, subtracted_emission)
             with image_col0:
                 truck_image = Image.open("image/truck.png")
                 st.image(truck_image, width=70)
+                tree_image = Image.open("image/tree.png")
+                st.image(tree_image, width=60)
             with text_col1:
-                st.markdown(f"<h6>How much is {'{:.3f}'.format(subtracted_emission)} kg of CO2 emission?</h6>", unsafe_allow_html=True)
-                st.write(f"This is equal to CO2 emission produced from {'{:.3f}'.format(compare_to_vehicle_value)} miles of vehicle ride.")
+                st.markdown(f"<h4>In comparison... </h4>",
+                            unsafe_allow_html=True)
+                st.write(f"This is equal to CO2 emission produced from :green[{'{:.3f}'.format(compare_to_vehicle_value)}] miles of vehicle ride.")
+                st.write(f":green[{math.ceil(compare_to_tree)}] mature trees are needed to absorb this amount of CO2 emission.")
             st.write(f'Total {"{:.3f}".format(subtracted_emission)} Kg of CO2 equivalent has been reduced compared to your original recipe!')
             email_receiver = st.text_input("Your email address:")
             final_df = st.session_state.df
@@ -332,11 +354,6 @@ if st.session_state["eval_button"] == True:
     with col2:
         selected_ingredient_swap = find_alternative(original_ingredients_select, swap_category, st.session_state.alternative_number)
         st.image(google_search_image(selected_ingredient_swap), width=200)
-        # selected_nutrient = nutrient_df[nutrient_df["FoodDescription"] == selected_ingredient_swap].iloc[:, 3:15]
-        # columns = ["Alcohol", "Caffeine", "Calcium", "Carbohydrate", "Cholesterol", "Copper", "Fats",
-        #            "Fatty Acids (Polysaturated)", "Fatty Acids (Unsaturated)", "Fibre", "Iron", "Lactose"]
-        # selected_nutrient.columns = columns
-        # st.table(selected_nutrient)
         button_col1, image_col, button_col2 = st.columns(3)
         with button_col1:
             save_button = st.button("Save Ingredient", key="save_button", on_click=change_dataframe, use_container_width=True)

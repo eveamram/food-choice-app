@@ -8,6 +8,7 @@ footprints_df = pd.read_csv("cleaned_data/carbon_footprints.csv")
 
 baseline_cutoff = ((((31368 * 1000000000) + (12577 * 1000000000)) / (15.3 * 1000000)) / 365 / 3) / 1000
 vehicle_base = 404 / 1000
+tree_cutoff= 68.5 / 1000
 
 def convert_units(amount, from_unit) -> float:
     factor = unit_df[unit_df["from_unit"] == from_unit]["conversion_factor"].values[0]
@@ -68,6 +69,10 @@ def find_eligible_category(df, footprints_df, food):
     except:
         pass
     return filtered_list_keys
+
+def calculate_num_trees(total_emission):
+    tree_num = total_emission / tree_cutoff
+    return tree_num
 
 def find_closest_alternative(df, footprints_df, category, food, within_category_attempt):
 
