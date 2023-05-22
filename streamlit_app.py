@@ -47,9 +47,6 @@ if "df" not in st.session_state:
 if "eval_button" not in st.session_state:
     st.session_state["eval_button"] = False
 
-# if "all_total_emssion" not in st.session_state:
-#     st.session_state["all_total_emission"] = 0
-
 def google_search_image(query):
     url = 'https://www.google.com/search?q={0}&tbm=isch'.format(query)
     content = requests.get(url).content
@@ -66,8 +63,6 @@ def google_search_image(query):
 placeholder = st.empty()
 
 with st.expander("➕ Click to Add Ingredient"):
-    # if "is_expanded" not in st.session_state:
-    #     st.session_state["is_expanded"] = False
 
     ingredient_columns = st.columns([2,3,1,1])
 
@@ -80,7 +75,7 @@ with st.expander("➕ Click to Add Ingredient"):
         selected_ingredient = st.selectbox(
             "Ingredient:", df_ingredient["FoodDescription"].unique(), key="input_col2")
     with ingredient_columns[2]:
-        selected_amount = st.number_input("Amount: ", key="input_col3", step=1, min_value=0)
+        selected_amount = st.number_input("Amount: ", key="input_col3", step=0.1, min_value=0.0)
         if type(selected_amount) == str:
             st.error("Please enter a numeric value.")
     with ingredient_columns[3]:
@@ -257,8 +252,8 @@ def send_email():
     em["From"] = email_sender
     em["To"] = email_receiver
     em["Subject"] = subject
-    st.write(final_df.to_string())
     em.set_content(final_df.to_string())
+    st.info("Your recipe has been sent to your email!", icon="ℹ️")
 
     context = ssl.create_default_context()
 
