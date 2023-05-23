@@ -284,9 +284,10 @@ if st.session_state["finalize_recipe"] == True:
     with final_text_col:
         if changed_emission < st.session_state.all_total_emission:
             st.markdown("<h2 style='color:green'>Success!</h2>", unsafe_allow_html=True)
-            text_col0, image_col0, text_col1 = st.columns([3,1,5])
+            text_col0, image_col0, text_col1 = st.columns([2,1,5])
             with text_col0:
-                st.metric("Total CO2 Kg produced:", changed_emission, subtracted_emission)
+                st.metric("Total CO2 Kg produced:",
+                          value=f"{round(changed_emission, 3)} Kg", delta=f"-{round(subtracted_emission, 3)} Kg")
             with image_col0:
                 truck_image = Image.open("image/truck.png")
                 st.image(truck_image, width=70)
@@ -295,8 +296,8 @@ if st.session_state["finalize_recipe"] == True:
             with text_col1:
                 st.markdown(f"<h4>In comparison... </h4>",
                             unsafe_allow_html=True)
-                st.write(f"This is equal to CO2 emission produced from :green[{'{:.3f}'.format(compare_to_vehicle_value)}] miles of vehicle ride.")
-                st.write(f":green[{math.ceil(compare_to_tree)}] mature trees are needed to absorb this amount of CO2 emission.")
+                st.write(f"This is equal to CO2 emission produced from :green[{'{:.3f}'.format(compare_to_vehicle_value)}] km of vehicle ride.")
+                st.write(f":green[{math.ceil(compare_to_tree)}] mature trees are needed to absorb this amount of CO2 emission in a day.")
             st.write(f'Total {"{:.3f}".format(subtracted_emission)} Kg of CO2 equivalent has been reduced compared to your original recipe!')
             email_receiver = st.text_input("Your email address:")
             final_df = st.session_state.df

@@ -7,7 +7,7 @@ unit_df = pd.read_csv("cleaned_data/unit_conversion.csv")
 footprints_df = pd.read_csv("cleaned_data/carbon_footprints.csv")
 
 baseline_cutoff = ((((31368 * 1000000000) + (12577 * 1000000000)) / (15.3 * 1000000)) / 365 / 3) / 1000
-vehicle_base = 404 / 1000
+vehicle_base = 650 / 1000
 tree_cutoff= 68.5 / 1000
 
 def convert_units(amount, from_unit) -> float:
